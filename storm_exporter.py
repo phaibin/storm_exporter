@@ -144,30 +144,23 @@ def topologySummaryMetric(topology_summary,stormUiHost):
 		topologyMetric(r.json())
 	except requests.exceptions.RequestException as e:
 	    print(e)
-	    sys.exit(1)
 
-def clusterSummaryMetric(stormUiHost):
-	try:
-		r =  requests.get('http://'+ stormUiHost +'/api/v1/cluster/summary')
-		clusterStorm = r.json()
-		STORM_CLUSTER_UP.set(1)
-		STORM_CLUSTER_TOPOLOGIES.set(clusterStorm['topologies'])
-		STORM_CLUSTER_SLOTS_TOTAL.set(clusterStorm['slotsTotal'])
-		STORM_CLUSTER_SLOTS_USED.set(clusterStorm['slotsUsed'])
-		STORM_CLUSTER_SLOTS_FREE.set(clusterStorm['slotsFree'])
-		STORM_CLUSTER_EXECUTORS_TOTAL.set(clusterStorm['executorsTotal'])
-		STORM_CLUSTER_TASKS_TOTAL.set(clusterStorm['tasksTotal'])
-		STORM_CLUSTER_SCHEDULER_DISPLAY_RESOURCE.set(clusterStorm['schedulerDisplayResource'])
-		STORM_CLUSTER_TOTAL_MEM.set(clusterStorm['totalMem'])
-		STORM_CLUSTER_TOTAL_CPU.set(clusterStorm['totalCpu'])
-		STORM_CLUSTER_AVAIL_CPU.set(clusterStorm['availCpu'])
-		STORM_CLUSTER_AVAIL_MEM.set(clusterStorm['availMem'])
-		STORM_CLUSTER_MEM_ASSIGNED_PERCENTUTIL.set(clusterStorm['memAssignedPercentUtil'])
-		STORM_CLUSTER_CPU_ASSIGNED_PERCENTUTIL.set(clusterStorm['cpuAssignedPercentUtil'])
-	except requests.exceptions.RequestException as e:
-	    print(e)
-	    sys.exit(1)
-
+def clusterSummaryMetric(clusterStorm):
+	STORM_CLUSTER_UP.set(1)
+	STORM_CLUSTER_TOPOLOGIES.set(clusterStorm['topologies'])
+	STORM_CLUSTER_SLOTS_TOTAL.set(clusterStorm['slotsTotal'])
+	STORM_CLUSTER_SLOTS_USED.set(clusterStorm['slotsUsed'])
+	STORM_CLUSTER_SLOTS_FREE.set(clusterStorm['slotsFree'])
+	STORM_CLUSTER_EXECUTORS_TOTAL.set(clusterStorm['executorsTotal'])
+	STORM_CLUSTER_TASKS_TOTAL.set(clusterStorm['tasksTotal'])
+	STORM_CLUSTER_SCHEDULER_DISPLAY_RESOURCE.set(clusterStorm['schedulerDisplayResource'])
+	STORM_CLUSTER_TOTAL_MEM.set(clusterStorm['totalMem'])
+	STORM_CLUSTER_TOTAL_CPU.set(clusterStorm['totalCpu'])
+	STORM_CLUSTER_AVAIL_CPU.set(clusterStorm['availCpu'])
+	STORM_CLUSTER_AVAIL_MEM.set(clusterStorm['availMem'])
+	STORM_CLUSTER_MEM_ASSIGNED_PERCENTUTIL.set(clusterStorm['memAssignedPercentUtil'])
+	STORM_CLUSTER_CPU_ASSIGNED_PERCENTUTIL.set(clusterStorm['cpuAssignedPercentUtil'])
+	
 def supervisorSummaryMetric(supervisor):
 	SupervisorName = supervisor['host']
 	STORM_SUPERVISOR_UPTIME_SECONDS.labels(SupervisorName).set(supervisor['uptimeSeconds'])
@@ -182,31 +175,42 @@ def supervisorSummaryMetric(supervisor):
 	STORM_SUPERVISOR_USED_CPU.labels(SupervisorName).set(supervisor['usedCpu'])
 
 
-
-if(len(sys.argv) != 4):
-	print('Missing arguments, Usage storm-metrics-consumer.py [StormUI Host] [HTTP port of the consumer] [Refresh Rate in Seconds]')
+if(len(sys.argv) != 5):
+	print('Missing arguments, Usage storm-metrics-consumer.py [StormUI Host] [HTTP port of the consumer] [Refresh Rate in Seconds] [Max Retries]')
 	sys.exit(-1)
 
 stormUiHost = str(sys.argv[1])
 httpPort = int(sys.argv[2])
 refreshRate = int(sys.argv[3])
+i = 1
+maxRetries = int(sys.argv[4])
 
 start_http_server(httpPort)
 while True:
 	try:
-		clusterSummaryMetric(stormUiHost)
+		clusterStorm =  requests.get('http://'+ stormUiHost +'/api/v1/cluster/summary')
+		print('cluster metrics')
+		clusterSummaryMetric(clusterStorm.json())
 
 		supervisorStrom = requests.get('http://'+ stormUiHost +'/api/v1/supervisor/summary')
+		print('supervison metrics')
 		for supervisor in supervisorStrom.json()['supervisors']:
 			supervisorSummaryMetric(supervisor)
 
-		r = requests.get('http://'+ stormUiHost +'/api/v1/topology/summary')
+		topologyStorm = requests.get('http://'+ stormUiHost +'/api/v1/topology/summary')
 		print('caught metrics')
-		for topology in r.json()['topologies']:
+		for topology in topologyStorm.json()['topologies']:
 			topologySummaryMetric(topology,stormUiHost)
+
 	except requests.exceptions.RequestException as e:
-	    print(e)
-	    sys.exit(1)
+		print(e)
+		if i >= maxRetries :
+			print("Retry times: %d" % i) 
+			print("Exit")
+			sys.exit(1)
+		else :
+			print("Retry times: %d" % i)
+			i += 1
 	time.sleep(refreshRate)
 
 	

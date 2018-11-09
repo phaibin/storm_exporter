@@ -4,6 +4,35 @@ import sys
 import requests
 from prometheus_client import start_http_server, Gauge
 
+#CLUSTER/SUMMARY METEICS
+STORM_CLUSTER_UP = Gauge('storm_up','Storm up')
+STORM_CLUSTER_SUPERVIORS = Gauge('cluster_supervisors','Number of supervisors running')
+STORM_CLUSTER_TOPOLOGIES = Gauge('cluster_topologies','Number of topologies running')
+STORM_CLUSTER_SLOTS_TOTAL = Gauge('cluster_slots_total','Total number of available worker slots')
+STORM_CLUSTER_SLOTS_USED = Gauge('cluster_slots_used','Number of worker slots used')
+STORM_CLUSTER_SLOTS_FREE = Gauge('cluster_slots_free','Number of worker slots available')
+STORM_CLUSTER_EXECUTORS_TOTAL = Gauge('cluster_executors_total','Total number of executors')
+STORM_CLUSTER_TASKS_TOTAL = Gauge('cluster_tasks_total','Total tasks')
+STORM_CLUSTER_SCHEDULER_DISPLAY_RESOURCE = Gauge('cluster_scheduler_display_resource','Whether to display scheduler resource information')
+STORM_CLUSTER_TOTAL_MEM = Gauge('cluster_total_mem','The total amount of memory in the cluster in MB')
+STORM_CLUSTER_TOTAL_CPU = Gauge('cluster_total_cpu','The total amount of CPU in the cluster')
+STORM_CLUSTER_AVAIL_CPU = Gauge('cluster_avail_cpu','The amount of available cpu in the cluster')
+STORM_CLUSTER_AVAIL_MEM = Gauge('cluster_avail_mem','The amount of available memory in the cluster in MB')
+STORM_CLUSTER_MEM_ASSIGNED_PERCENTUTIL = Gauge('cluster_mem_assigned_aercentutil','The percent utilization of assigned memory resources in cluster')
+STORM_CLUSTER_CPU_ASSIGNED_PERCENTUTIL = Gauge('cluster_cpu_assigned_aercentutil','The percent utilization of assigned cpu resources in cluster')
+
+#SUPERVISOR/SUMMARY METRICS
+STORM_SUPERVISOR_UPTIME_SECONDS = Gauge('supervisor_uptime_seconds','Shows how long the supervisor is running in seconds',['SupervisorName'])
+STORM_SUPERVISOR_SLOTS_TOTAL = Gauge('supervisor_slots_total','Total number of available worker slots for this supervisor',['SupervisorName'])
+STORM_SUPERVISOR_SLOTS_USED = Gauge('supervisor_slots_used','Number of worker slots used on this supervisor',['SupervisorName'])
+STORM_SUPERVISOR_SLOTS_FREE = Gauge('supervisor_slots_free','Number of worker slots available',['SupervisorName'])
+STORM_SUPERVISOR_TOTAL_MEM = Gauge('supervisor_total_mem','Total memory capacity on this supervisor',['SupervisorName'])
+STORM_SUPERVISOR_TOTAL_CPU = Gauge('supervisor_total_cpu','Total CPU capacity on this supervisor',['SupervisorName'])
+STORM_SUPERVISOR_AVAIL_CPU = Gauge('supervisor_avail_cpu','The amount of available cpu in the supervisor',['SupervisorName'])
+STORM_SUPERVISOR_AVAIL_MEM = Gauge('supervisor_avail_mem','The amount of available memory in the supervisor in MB',['SupervisorName'])
+STORM_SUPERVISOR_USED_MEM = Gauge('supervisor_used_mem','Used memory capacity on this supervisor',['SupervisorName'])
+STORM_SUPERVISOR_USED_CPU = Gauge('supervisor_used_cpu','Used CPU capacity on this supervisor',['SupervisorName'])
+
 #TOPOLOGY/SUMMARY METRICS
 STORM_TOPOLOGY_UPTIME_SECONDS = Gauge('uptime_seconds','Shows how long the topology is running in seconds',['TopologyName', 'TopologyId'])
 STORM_TOPOLOGY_TASKS_TOTAL = Gauge('tasks_total','Total number of tasks for this topology',['TopologyName', 'TopologyId'])
@@ -83,7 +112,6 @@ def boltMetric(bolt,tn,tid):
 	STORM_TOPOLOGY_BOLTS_EMITTED.labels(tn,tid,bid).set(getMetric(bolt['emitted']))
 
 
-
 def topologyMetric(topology):
 	tn = topology['name'] 
 	tid = topology['id']
@@ -93,8 +121,6 @@ def topologyMetric(topology):
 		spoutMetric(spout,tn,tid)
 	for bolt in topology['bolts']:
 		boltMetric(bolt,tn,tid)		
-
-
 
 def topologySummaryMetric(topology_summary,stormUiHost):
 	tn = topology_summary['name'] 
@@ -120,6 +146,40 @@ def topologySummaryMetric(topology_summary,stormUiHost):
 	    print(e)
 	    sys.exit(1)
 
+def clusterSummaryMetric(stormUiHost):
+	try:
+		r =  requests.get('http://'+ stormUiHost +'/api/v1/cluster/summary')
+		clusterStorm = r.json()
+		STORM_CLUSTER_UP.set(1)
+		STORM_CLUSTER_TOPOLOGIES.set(clusterStorm['topologies'])
+		STORM_CLUSTER_SLOTS_TOTAL.set(clusterStorm['slotsTotal'])
+		STORM_CLUSTER_SLOTS_USED.set(clusterStorm['slotsUsed'])
+		STORM_CLUSTER_SLOTS_FREE.set(clusterStorm['slotsFree'])
+		STORM_CLUSTER_EXECUTORS_TOTAL.set(clusterStorm['executorsTotal'])
+		STORM_CLUSTER_TASKS_TOTAL.set(clusterStorm['tasksTotal'])
+		STORM_CLUSTER_SCHEDULER_DISPLAY_RESOURCE.set(clusterStorm['schedulerDisplayResource'])
+		STORM_CLUSTER_TOTAL_MEM.set(clusterStorm['totalMem'])
+		STORM_CLUSTER_TOTAL_CPU.set(clusterStorm['totalCpu'])
+		STORM_CLUSTER_AVAIL_CPU.set(clusterStorm['availCpu'])
+		STORM_CLUSTER_AVAIL_MEM.set(clusterStorm['availMem'])
+		STORM_CLUSTER_MEM_ASSIGNED_PERCENTUTIL.set(clusterStorm['memAssignedPercentUtil'])
+		STORM_CLUSTER_CPU_ASSIGNED_PERCENTUTIL.set(clusterStorm['cpuAssignedPercentUtil'])
+	except requests.exceptions.RequestException as e:
+	    print(e)
+	    sys.exit(1)
+
+def supervisorSummaryMetric(supervisor):
+	SupervisorName = supervisor['host']
+	STORM_SUPERVISOR_UPTIME_SECONDS.labels(SupervisorName).set(supervisor['uptimeSeconds'])
+	STORM_SUPERVISOR_SLOTS_TOTAL.labels(SupervisorName).set(supervisor['slotsTotal'])
+	STORM_SUPERVISOR_SLOTS_USED.labels(SupervisorName).set(supervisor['slotsUsed'])
+	STORM_SUPERVISOR_SLOTS_FREE.labels(SupervisorName).set(supervisor['slotsFree'])
+	STORM_SUPERVISOR_TOTAL_MEM.labels(SupervisorName).set(supervisor['totalMem'])
+	STORM_SUPERVISOR_TOTAL_CPU.labels(SupervisorName).set(supervisor['totalCpu'])
+	STORM_SUPERVISOR_AVAIL_CPU.labels(SupervisorName).set(supervisor['availCpu'])
+	STORM_SUPERVISOR_AVAIL_MEM.labels(SupervisorName).set(supervisor['availMem'])
+	STORM_SUPERVISOR_USED_MEM.labels(SupervisorName).set(supervisor['usedMem'])
+	STORM_SUPERVISOR_USED_CPU.labels(SupervisorName).set(supervisor['usedCpu'])
 
 
 
@@ -134,6 +194,12 @@ refreshRate = int(sys.argv[3])
 start_http_server(httpPort)
 while True:
 	try:
+		clusterSummaryMetric(stormUiHost)
+
+		supervisorStrom = requests.get('http://'+ stormUiHost +'/api/v1/supervisor/summary')
+		for supervisor in supervisorStrom.json()['supervisors']:
+			supervisorSummaryMetric(supervisor)
+
 		r = requests.get('http://'+ stormUiHost +'/api/v1/topology/summary')
 		print('caught metrics')
 		for topology in r.json()['topologies']:

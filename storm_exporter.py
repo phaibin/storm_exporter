@@ -6,6 +6,7 @@ from prometheus_client import start_http_server, Gauge
 
 #CLUSTER/SUMMARY METEICS
 STORM_CLUSTER_UP = Gauge('storm_up','Storm up')
+STORM_CLUSTER_TIME_SECOND = Gauge('storm_up_time_seconds','Shows since how long the nimbus has been running in seconds')
 STORM_CLUSTER_SUPERVIORS = Gauge('cluster_supervisors','Number of supervisors running')
 STORM_CLUSTER_TOPOLOGIES = Gauge('cluster_topologies','Number of topologies running')
 STORM_CLUSTER_SLOTS_TOTAL = Gauge('cluster_slots_total','Total number of available worker slots')
@@ -20,6 +21,7 @@ STORM_CLUSTER_AVAIL_CPU = Gauge('cluster_avail_cpu','The amount of available cpu
 STORM_CLUSTER_AVAIL_MEM = Gauge('cluster_avail_mem','The amount of available memory in the cluster in MB')
 STORM_CLUSTER_MEM_ASSIGNED_PERCENTUTIL = Gauge('cluster_mem_assigned_aercentutil','The percent utilization of assigned memory resources in cluster')
 STORM_CLUSTER_CPU_ASSIGNED_PERCENTUTIL = Gauge('cluster_cpu_assigned_aercentutil','The percent utilization of assigned cpu resources in cluster')
+
 
 #SUPERVISOR/SUMMARY METRICS
 STORM_SUPERVISOR_UPTIME_SECONDS = Gauge('supervisor_uptime_seconds','Shows how long the supervisor is running in seconds',['SupervisorName'])
@@ -161,6 +163,9 @@ def clusterSummaryMetric(clusterStorm):
 	STORM_CLUSTER_MEM_ASSIGNED_PERCENTUTIL.set(clusterStorm['memAssignedPercentUtil'])
 	STORM_CLUSTER_CPU_ASSIGNED_PERCENTUTIL.set(clusterStorm['cpuAssignedPercentUtil'])
 	
+def nimbusSummaryMetric(nimbusStorm):
+	STORM_CLUSTER_TIME_SECOND.set(nimbusStorm['nimbusUpTimeSeconds'])
+
 def supervisorSummaryMetric(supervisor):
 	SupervisorName = supervisor['host']
 	STORM_SUPERVISOR_UPTIME_SECONDS.labels(SupervisorName).set(supervisor['uptimeSeconds'])
@@ -191,6 +196,11 @@ while True:
 		clusterStorm =  requests.get('http://'+ stormUiHost +'/api/v1/cluster/summary')
 		print('cluster metrics')
 		clusterSummaryMetric(clusterStorm.json())
+
+		nimbusStorm =  requests.get('http://'+ stormUiHost +'/api/v1/nimbus/summary')
+		print('nimbus metrics')
+		for nimbus in nimbusStorm.json()['nimbuses']:
+			nimbusSummaryMetric(nimbus)
 
 		supervisorStrom = requests.get('http://'+ stormUiHost +'/api/v1/supervisor/summary')
 		print('supervison metrics')

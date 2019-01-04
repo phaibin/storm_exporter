@@ -2,6 +2,7 @@
 import time
 import sys
 import requests
+import telnetlib
 from prometheus_client import start_http_server, Gauge
 
 #CLUSTER/SUMMARY METEICS
@@ -36,19 +37,19 @@ STORM_SUPERVISOR_USED_MEM = Gauge('supervisor_used_mem','Used memory capacity on
 STORM_SUPERVISOR_USED_CPU = Gauge('supervisor_used_cpu','Used CPU capacity on this supervisor',['SupervisorName'])
 
 #TOPOLOGY/SUMMARY METRICS
-STORM_TOPOLOGY_UPTIME_SECONDS = Gauge('uptime_seconds','Shows how long the topology is running in seconds',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_TASKS_TOTAL = Gauge('tasks_total','Total number of tasks for this topology',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_WORKERS_TOTAL = Gauge('workers_total','Number of workers used for this topology',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_EXECUTORS_TOTAL = Gauge('executors_total','Number of executors used for this topology',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_REPLICATION_COUNT = Gauge('replication_count','Number of nimbus hosts on which this topology code is replicated',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_REQUESTED_MEM_ON_HEAP = Gauge('requested_mem_on_heap','Requested On-Heap Memory by User (MB)',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_REQUESTED_MEM_OFF_HEAP = Gauge('requested_mem_off_heap','Requested Off-Heap Memory by User (MB)',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_REQUESTED_TOTAL_MEM = Gauge('requested_total_mem','Requested Total Memory by User (MB)',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_REQUESTED_CPU = Gauge('requested_cpu','Requested CPU by User (%)',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_ASSIGNED_MEM_ON_HEAP = Gauge('assigned_mem_on_heap','Assigned On-Heap Memory by Scheduler (MB)',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_ASSIGNED_MEM_OFF_HEAP = Gauge('assigned_mem_off_heap','Assigned Off-Heap Memory by Scheduler (MB)',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_ASSIGNED_TOTAL_MEM = Gauge('assigned_total_mem','Assigned Total Memory by Scheduler (MB)',['TopologyName', 'TopologyId'])
-STORM_TOPOLOGY_ASSIGNED_CPU = Gauge('assigned_cpu','Assigned CPU by Scheduler (%)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_UPTIME_SECONDS = Gauge('topology_uptime_seconds','Shows how long the topology is running in seconds',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_TASKS_TOTAL = Gauge('topology_tasks_total','Total number of tasks for this topology',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_WORKERS_TOTAL = Gauge('topology_workers_total','Number of workers used for this topology',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_EXECUTORS_TOTAL = Gauge('topology_executors_total','Number of executors used for this topology',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_REPLICATION_COUNT = Gauge('topology_replication_count','Number of nimbus hosts on which this topology code is replicated',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_REQUESTED_MEM_ON_HEAP = Gauge('topology_requested_mem_on_heap','Requested On-Heap Memory by User (MB)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_REQUESTED_MEM_OFF_HEAP = Gauge('topology_requested_mem_off_heap','Requested Off-Heap Memory by User (MB)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_REQUESTED_TOTAL_MEM = Gauge('topology_requested_total_mem','Requested Total Memory by User (MB)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_REQUESTED_CPU = Gauge('topology_requested_cpu','Requested CPU by User (%)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_ASSIGNED_MEM_ON_HEAP = Gauge('topology_assigned_mem_on_heap','Assigned On-Heap Memory by Scheduler (MB)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_ASSIGNED_MEM_OFF_HEAP = Gauge('topology_assigned_mem_off_heap','Assigned Off-Heap Memory by Scheduler (MB)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_ASSIGNED_TOTAL_MEM = Gauge('topology_assigned_total_mem','Assigned Total Memory by Scheduler (MB)',['TopologyName', 'TopologyId'])
+STORM_TOPOLOGY_ASSIGNED_CPU = Gauge('topology_assigned_cpu','Assigned CPU by Scheduler (%)',['TopologyName', 'TopologyId'])
 
 #TOPOLOGY/STATS METRICS:
 TOPOLOGY_STATS_TRASFERRED = Gauge('topology_stats_trasferred','Number messages transferred in given window',['TopologyName', 'TopologyId','window'])
@@ -58,23 +59,23 @@ TOPOLOGY_STATS_ACKED = Gauge('topology_stats_acked','Number of messages acked in
 TOPOLOGY_STATS_FAILED = Gauge('topology_stats_failed','Number of messages failed in given window',['TopologyName', 'TopologyId','window'])
 
 #TOPOLOGY/ID SPOUT METRICS:
-STORM_TOPOLOGY_SPOUTS_EXECUTORS = Gauge('spouts_executors','Number of executors for the spout',['TopologyName', 'TopologyId','SpoutId'])
-STORM_TOPOLOGY_SPOUTS_EMITTED = Gauge('spouts_emitted','Number of messages emitted in given window',['TopologyName', 'TopologyId','SpoutId'])
-STORM_TOPOLOGY_SPOUTS_COMPLETE_LATENCY = Gauge('spouts_complete_latency','Total latency for processing the message',['TopologyName', 'TopologyId','SpoutId'])
-STORM_TOPOLOGY_SPOUTS_TRANSFERRED = Gauge('spouts_transferred','Total number of messages transferred in given window',['TopologyName', 'TopologyId','SpoutId'])
-STORM_TOPOLOGY_SPOUTS_TASKS = Gauge('spouts_tasks','Total number of tasks for the spout',['TopologyName', 'TopologyId','SpoutId'])
-STORM_TOPOLOGY_SPOUTS_ACKED = Gauge('spouts_acked','Number of messages acked',['TopologyName', 'TopologyId','SpoutId'])
-STORM_TOPOLOGY_SPOUTS_FAILED = Gauge('spouts_failed','Number of messages failed',['TopologyName', 'TopologyId','SpoutId'])
+STORM_TOPOLOGY_SPOUTS_EXECUTORS = Gauge('topology_spouts_executors','Number of executors for the spout',['TopologyName', 'TopologyId','SpoutId'])
+STORM_TOPOLOGY_SPOUTS_EMITTED = Gauge('topology_spouts_emitted','Number of messages emitted in given window',['TopologyName', 'TopologyId','SpoutId'])
+STORM_TOPOLOGY_SPOUTS_COMPLETE_LATENCY = Gauge('topology_spouts_complete_latency','Total latency for processing the message',['TopologyName', 'TopologyId','SpoutId'])
+STORM_TOPOLOGY_SPOUTS_TRANSFERRED = Gauge('topology_spouts_transferred','Total number of messages transferred in given window',['TopologyName', 'TopologyId','SpoutId'])
+STORM_TOPOLOGY_SPOUTS_TASKS = Gauge('topology_spouts_tasks','Total number of tasks for the spout',['TopologyName', 'TopologyId','SpoutId'])
+STORM_TOPOLOGY_SPOUTS_ACKED = Gauge('topology_spouts_acked','Number of messages acked',['TopologyName', 'TopologyId','SpoutId'])
+STORM_TOPOLOGY_SPOUTS_FAILED = Gauge('topology_spouts_failed','Number of messages failed',['TopologyName', 'TopologyId','SpoutId'])
 
 #TOPOLOGY/ID BOLT METRICS:
-STORM_TOPOLOGY_BOLTS_PROCESS_LATENCY = Gauge('bolts_process_latency','Average time of the bolt to ack a message after it was received',['TopologyName', 'TopologyId','BoltId'])
-STORM_TOPOLOGY_BOLTS_CAPACITY = Gauge('bolts_capacity','This value indicates number of messages executed * average execute latency / time window',['TopologyName', 'TopologyId','BoltId'])
-STORM_TOPOLOGY_BOLTS_EXECUTE_LATENCY = Gauge('bolts_execute_latency','Average time to run the execute method of the bolt',['TopologyName', 'TopologyId','BoltId'])
-STORM_TOPOLOGY_BOLTS_EXECUTORS = Gauge('bolts_executors','Number of executor tasks in the bolt component',['TopologyName', 'TopologyId','BoltId'])
-STORM_TOPOLOGY_BOLTS_TASKS = Gauge('bolts_tasks','Number of instances of bolt',['TopologyName', 'TopologyId','BoltId'])
-STORM_TOPOLOGY_BOLTS_ACKED = Gauge('bolts_acked','Number of tuples acked by the bolt',['TopologyName', 'TopologyId','BoltId'])
-STORM_TOPOLOGY_BOLTS_FAILED = Gauge('bolts_failed','Number of tuples failed by the bolt',['TopologyName', 'TopologyId','BoltId'])
-STORM_TOPOLOGY_BOLTS_EMITTED = Gauge('bolts_emitted','of tuples emitted by the bolt',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_PROCESS_LATENCY = Gauge('topology_bolts_process_latency','Average time of the bolt to ack a message after it was received',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_CAPACITY = Gauge('topology_bolts_capacity','This value indicates number of messages executed * average execute latency / time window',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_EXECUTE_LATENCY = Gauge('topology_bolts_execute_latency','Average time to run the execute method of the bolt',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_EXECUTORS = Gauge('topology_bolts_executors','Number of executor tasks in the bolt component',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_TASKS = Gauge('topology_bolts_tasks','Number of instances of bolt',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_ACKED = Gauge('topology_bolts_acked','Number of tuples acked by the bolt',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_FAILED = Gauge('topology_bolts_failed','Number of tuples failed by the bolt',['TopologyName', 'TopologyId','BoltId'])
+STORM_TOPOLOGY_BOLTS_EMITTED = Gauge('topology_bolts_emitted','of tuples emitted by the bolt',['TopologyName', 'TopologyId','BoltId'])
 
 def getMetric(metric):
 	if metric == None:
@@ -149,6 +150,7 @@ def topologySummaryMetric(topology_summary,stormUiHost):
 
 def clusterSummaryMetric(clusterStorm):
 	STORM_CLUSTER_UP.set(1)
+	STORM_CLUSTER_SUPERVIORS.set(clusterStorm['supervisors'])
 	STORM_CLUSTER_TOPOLOGIES.set(clusterStorm['topologies'])
 	STORM_CLUSTER_SLOTS_TOTAL.set(clusterStorm['slotsTotal'])
 	STORM_CLUSTER_SLOTS_USED.set(clusterStorm['slotsUsed'])
@@ -185,45 +187,56 @@ if(len(sys.argv) != 5):
 	sys.exit(-1)
 
 stormUiHost = str(sys.argv[1])
+stormUiHostPort = stormUiHost.split(":")
+if len(stormUiHostPort) != 2:
+	print("Invalid stormUiHost")
+	print("Exit -2")
+	sys.exit(-2)
+stormHost = stormUiHostPort[0]
+stormPort = stormUiHostPort[1]
 httpPort = int(sys.argv[2])
 refreshRate = int(sys.argv[3])
 i = 1
 maxRetries = int(sys.argv[4])
 
 start_http_server(httpPort)
+	
 while True:
 	try:
-		clusterStorm =  requests.get('http://'+ stormUiHost +'/api/v1/cluster/summary')
-		print('cluster metrics')
-		clusterSummaryMetric(clusterStorm.json())
-
-		nimbusStorm =  requests.get('http://'+ stormUiHost +'/api/v1/nimbus/summary')
-		print('nimbus metrics')
-		for nimbus in nimbusStorm.json()['nimbuses']:
-			nimbusSummaryMetric(nimbus)
-
-		supervisorStrom = requests.get('http://'+ stormUiHost +'/api/v1/supervisor/summary')
-		print('supervison metrics')
-		for supervisor in supervisorStrom.json()['supervisors']:
-			supervisorSummaryMetric(supervisor)
-
-		topologyStorm = requests.get('http://'+ stormUiHost +'/api/v1/topology/summary')
-		print('caught metrics')
-		for topology in topologyStorm.json()['topologies']:
-			topologySummaryMetric(topology,stormUiHost)
-
-	except requests.exceptions.RequestException as e:
+		telnetlib.Telnet(stormHost,stormPort)
+	except	Exception as e:
 		print(e)
-		if i >= maxRetries :
-			print("Retry times: %d" % i) 
-			print("Exit")
-			sys.exit(1)
-		else :
-			print("Retry times: %d" % i)
-			i += 1
-	time.sleep(refreshRate)
+	else:
+		try:
+			clusterStorm =  requests.get('http://'+ stormUiHost +'/api/v1/cluster/summary')
+			print('cluster metrics')
+			clusterSummaryMetric(clusterStorm.json())
 
-	
+			nimbusStorm =  requests.get('http://'+ stormUiHost +'/api/v1/nimbus/summary')
+			print('nimbus metrics')
+			for nimbus in nimbusStorm.json()['nimbuses']:
+				nimbusSummaryMetric(nimbus)
+
+			supervisorStrom = requests.get('http://'+ stormUiHost +'/api/v1/supervisor/summary')
+			print('supervison metrics')
+			for supervisor in supervisorStrom.json()['supervisors']:
+				supervisorSummaryMetric(supervisor)
+
+			topologyStorm = requests.get('http://'+ stormUiHost +'/api/v1/topology/summary')
+			print('caught metrics')
+			for topology in topologyStorm.json()['topologies']:
+				topologySummaryMetric(topology,stormUiHost)
+
+		except requests.exceptions.RequestException as e:
+			print(e)
+			if i >= maxRetries :
+				print("Retry times: %d" % i)
+				print("Exit 1")
+				sys.exit(1)
+			else :
+				print("Retry times: %d" % i)
+				i += 1
+	time.sleep(refreshRate)
 
 
 

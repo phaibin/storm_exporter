@@ -62,79 +62,79 @@ STORM_SUPERVISOR_USED_CPU = Gauge(
 
 # TOPOLOGY/SUMMARY METRICS
 STORM_TOPOLOGY_STATUS = Info(
-    'storm_topology_status', 'Shows topology status', ['TopologyName', 'TopologyId'])
+    'storm_topology_status', 'Shows topology status', ['TopologyName'])
 STORM_TOPOLOGY_UPTIME_SECONDS = Gauge(
-    'storm_topology_uptime_seconds', 'Shows how long the topology is running in seconds', ['TopologyName', 'TopologyId'])
+    'storm_topology_uptime_seconds', 'Shows how long the topology is running in seconds', ['TopologyName'])
 STORM_TOPOLOGY_TASKS_TOTAL = Gauge(
-    'storm_topology_tasks_total', 'Total number of tasks for this topology', ['TopologyName', 'TopologyId'])
+    'storm_topology_tasks_total', 'Total number of tasks for this topology', ['TopologyName'])
 STORM_TOPOLOGY_WORKERS_TOTAL = Gauge(
-    'storm_topology_workers_total', 'Number of workers used for this topology', ['TopologyName', 'TopologyId'])
+    'storm_topology_workers_total', 'Number of workers used for this topology', ['TopologyName'])
 STORM_TOPOLOGY_EXECUTORS_TOTAL = Gauge(
-    'storm_topology_executors_total', 'Number of executors used for this topology', ['TopologyName', 'TopologyId'])
+    'storm_topology_executors_total', 'Number of executors used for this topology', ['TopologyName'])
 STORM_TOPOLOGY_REPLICATION_COUNT = Gauge(
-    'storm_topology_replication_count', 'Number of nimbus hosts on which this topology code is replicated', ['TopologyName', 'TopologyId'])
+    'storm_topology_replication_count', 'Number of nimbus hosts on which this topology code is replicated', ['TopologyName'])
 STORM_TOPOLOGY_REQUESTED_MEM_ON_HEAP = Gauge(
-    'storm_topology_requested_mem_on_heap', 'Requested On-Heap Memory by User (MB)', ['TopologyName', 'TopologyId'])
+    'storm_topology_requested_mem_on_heap', 'Requested On-Heap Memory by User (MB)', ['TopologyName'])
 STORM_TOPOLOGY_REQUESTED_MEM_OFF_HEAP = Gauge(
-    'storm_topology_requested_mem_off_heap', 'Requested Off-Heap Memory by User (MB)', ['TopologyName', 'TopologyId'])
+    'storm_topology_requested_mem_off_heap', 'Requested Off-Heap Memory by User (MB)', ['TopologyName'])
 STORM_TOPOLOGY_REQUESTED_TOTAL_MEM = Gauge(
-    'storm_topology_requested_total_mem', 'Requested Total Memory by User (MB)', ['TopologyName', 'TopologyId'])
+    'storm_topology_requested_total_mem', 'Requested Total Memory by User (MB)', ['TopologyName'])
 STORM_TOPOLOGY_REQUESTED_CPU = Gauge(
-    'storm_topology_requested_cpu', 'Requested CPU by User (%)', ['TopologyName', 'TopologyId'])
+    'storm_topology_requested_cpu', 'Requested CPU by User (%)', ['TopologyName'])
 STORM_TOPOLOGY_ASSIGNED_MEM_ON_HEAP = Gauge(
-    'storm_topology_assigned_mem_on_heap', 'Assigned On-Heap Memory by Scheduler (MB)', ['TopologyName', 'TopologyId'])
+    'storm_topology_assigned_mem_on_heap', 'Assigned On-Heap Memory by Scheduler (MB)', ['TopologyName'])
 STORM_TOPOLOGY_ASSIGNED_MEM_OFF_HEAP = Gauge(
-    'storm_topology_assigned_mem_off_heap', 'Assigned Off-Heap Memory by Scheduler (MB)', ['TopologyName', 'TopologyId'])
+    'storm_topology_assigned_mem_off_heap', 'Assigned Off-Heap Memory by Scheduler (MB)', ['TopologyName'])
 STORM_TOPOLOGY_ASSIGNED_TOTAL_MEM = Gauge(
-    'storm_topology_assigned_total_mem', 'Assigned Total Memory by Scheduler (MB)', ['TopologyName', 'TopologyId'])
+    'storm_topology_assigned_total_mem', 'Assigned Total Memory by Scheduler (MB)', ['TopologyName'])
 STORM_TOPOLOGY_ASSIGNED_CPU = Gauge(
-    'storm_topology_assigned_cpu', 'Assigned CPU by Scheduler (%)', ['TopologyName', 'TopologyId'])
+    'storm_topology_assigned_cpu', 'Assigned CPU by Scheduler (%)', ['TopologyName'])
 
 # TOPOLOGY/STATS METRICS:
 TOPOLOGY_STATS_TRASFERRED = Gauge('storm_topology_stats_trasferred', 'Number messages transferred in given window', [
-                                  'TopologyName', 'TopologyId', 'window'])
+                                  'TopologyName', 'window'])
 TOPOLOGY_STATS_EMITTED = Gauge('storm_topology_stats_emitted', 'Number of messages emitted in given window', [
-                               'TopologyName', 'TopologyId', 'window'])
+                               'TopologyName', 'window'])
 TOPOLOGY_STATS_COMPLETE_LATENCY = Gauge('storm_topology_stats_complete_latency', 'Total latency for processing the message', [
-                                        'TopologyName', 'TopologyId', 'window'])
+                                        'TopologyName', 'window'])
 TOPOLOGY_STATS_ACKED = Gauge('storm_topology_stats_acked', 'Number of messages acked in given window', [
-                             'TopologyName', 'TopologyId', 'window'])
+                             'TopologyName', 'window'])
 TOPOLOGY_STATS_FAILED = Gauge('storm_topology_stats_failed', 'Number of messages failed in given window', [
-                              'TopologyName', 'TopologyId', 'window'])
+                              'TopologyName', 'window'])
 
 # TOPOLOGY/ID SPOUT METRICS:
 STORM_TOPOLOGY_SPOUTS_EXECUTORS = Gauge('storm_topology_spouts_executors', 'Number of executors for the spout', [
-                                        'TopologyName', 'TopologyId', 'SpoutId'])
+                                        'TopologyName', 'SpoutId'])
 STORM_TOPOLOGY_SPOUTS_EMITTED = Gauge('storm_topology_spouts_emitted', 'Number of messages emitted in given window', [
-                                      'TopologyName', 'TopologyId', 'SpoutId'])
+                                      'TopologyName', 'SpoutId'])
 STORM_TOPOLOGY_SPOUTS_COMPLETE_LATENCY = Gauge(
-    'storm_topology_spouts_complete_latency', 'Total latency for processing the message', ['TopologyName', 'TopologyId', 'SpoutId'])
+    'storm_topology_spouts_complete_latency', 'Total latency for processing the message', ['TopologyName', 'SpoutId'])
 STORM_TOPOLOGY_SPOUTS_TRANSFERRED = Gauge('storm_topology_spouts_transferred', 'Total number of messages transferred in given window', [
-                                          'TopologyName', 'TopologyId', 'SpoutId'])
+                                          'TopologyName', 'SpoutId'])
 STORM_TOPOLOGY_SPOUTS_TASKS = Gauge('storm_topology_spouts_tasks', 'Total number of tasks for the spout', [
-                                    'TopologyName', 'TopologyId', 'SpoutId'])
+                                    'TopologyName', 'SpoutId'])
 STORM_TOPOLOGY_SPOUTS_ACKED = Gauge('storm_topology_spouts_acked', 'Number of messages acked', [
-                                    'TopologyName', 'TopologyId', 'SpoutId'])
+                                    'TopologyName', 'SpoutId'])
 STORM_TOPOLOGY_SPOUTS_FAILED = Gauge('storm_topology_spouts_failed', 'Number of messages failed', [
-                                     'TopologyName', 'TopologyId', 'SpoutId'])
+                                     'TopologyName', 'SpoutId'])
 
 # TOPOLOGY/ID BOLT METRICS:
 STORM_TOPOLOGY_BOLTS_PROCESS_LATENCY = Gauge(
-    'storm_topology_bolts_process_latency', 'Average time of the bolt to ack a message after it was received', ['TopologyName', 'TopologyId', 'BoltId'])
+    'storm_topology_bolts_process_latency', 'Average time of the bolt to ack a message after it was received', ['TopologyName', 'BoltId'])
 STORM_TOPOLOGY_BOLTS_CAPACITY = Gauge(
-    'storm_topology_bolts_capacity', 'This value indicates number of messages executed * average execute latency / time window', ['TopologyName', 'TopologyId', 'BoltId'])
+    'storm_topology_bolts_capacity', 'This value indicates number of messages executed * average execute latency / time window', ['TopologyName', 'BoltId'])
 STORM_TOPOLOGY_BOLTS_EXECUTE_LATENCY = Gauge(
-    'storm_topology_bolts_execute_latency', 'Average time to run the execute method of the bolt', ['TopologyName', 'TopologyId', 'BoltId'])
+    'storm_topology_bolts_execute_latency', 'Average time to run the execute method of the bolt', ['TopologyName', 'BoltId'])
 STORM_TOPOLOGY_BOLTS_EXECUTORS = Gauge('storm_topology_bolts_executors', 'Number of executor tasks in the bolt component', [
-                                       'TopologyName', 'TopologyId', 'BoltId'])
+                                       'TopologyName', 'BoltId'])
 STORM_TOPOLOGY_BOLTS_TASKS = Gauge('storm_topology_bolts_tasks', 'Number of instances of bolt', [
-                                   'TopologyName', 'TopologyId', 'BoltId'])
+                                   'TopologyName', 'BoltId'])
 STORM_TOPOLOGY_BOLTS_ACKED = Gauge('storm_topology_bolts_acked', 'Number of tuples acked by the bolt', [
-                                   'TopologyName', 'TopologyId', 'BoltId'])
+                                   'TopologyName', 'BoltId'])
 STORM_TOPOLOGY_BOLTS_FAILED = Gauge('storm_topology_bolts_failed', 'Number of tuples failed by the bolt', [
-                                    'TopologyName', 'TopologyId', 'BoltId'])
+                                    'TopologyName', 'BoltId'])
 STORM_TOPOLOGY_BOLTS_EMITTED = Gauge('storm_topology_bolts_emitted', 'of tuples emitted by the bolt', [
-                                     'TopologyName', 'TopologyId', 'BoltId'])
+                                     'TopologyName', 'BoltId'])
 
 
 def getMetric(metric):
@@ -146,51 +146,51 @@ def getMetric(metric):
 
 def statsMetric(stat, tn, tid):
     wd = stat['window']
-    TOPOLOGY_STATS_TRASFERRED.labels(tn, tid, wd).set(
+    TOPOLOGY_STATS_TRASFERRED.labels(tn, wd).set(
         getMetric(stat['transferred']))
-    TOPOLOGY_STATS_EMITTED.labels(tn, tid, wd).set(getMetric(stat['emitted']))
+    TOPOLOGY_STATS_EMITTED.labels(tn, wd).set(getMetric(stat['emitted']))
     TOPOLOGY_STATS_COMPLETE_LATENCY.labels(
-        tn, tid, wd).set(getMetric(stat['completeLatency']))
-    TOPOLOGY_STATS_ACKED.labels(tn, tid, wd).set(getMetric(stat['acked']))
-    TOPOLOGY_STATS_FAILED.labels(tn, tid, wd).set(getMetric(stat['failed']))
+        tn, wd).set(getMetric(stat['completeLatency']))
+    TOPOLOGY_STATS_ACKED.labels(tn, wd).set(getMetric(stat['acked']))
+    TOPOLOGY_STATS_FAILED.labels(tn, wd).set(getMetric(stat['failed']))
 
 
 def spoutMetric(spout, tn, tid):
     sid = spout['spoutId']
     STORM_TOPOLOGY_SPOUTS_EXECUTORS.labels(
-        tn, tid, sid).set(getMetric(spout['executors']))
+        tn, sid).set(getMetric(spout['executors']))
     STORM_TOPOLOGY_SPOUTS_EMITTED.labels(
-        tn, tid, sid).set(getMetric(spout['emitted']))
+        tn, sid).set(getMetric(spout['emitted']))
     STORM_TOPOLOGY_SPOUTS_COMPLETE_LATENCY.labels(
-        tn, tid, sid).set(getMetric(spout['completeLatency']))
+        tn, sid).set(getMetric(spout['completeLatency']))
     STORM_TOPOLOGY_SPOUTS_TRANSFERRED.labels(
-        tn, tid, sid).set(getMetric(spout['transferred']))
+        tn, sid).set(getMetric(spout['transferred']))
     STORM_TOPOLOGY_SPOUTS_TASKS.labels(
-        tn, tid, sid).set(getMetric(spout['tasks']))
+        tn, sid).set(getMetric(spout['tasks']))
     STORM_TOPOLOGY_SPOUTS_ACKED.labels(
-        tn, tid, sid).set(getMetric(spout['acked']))
+        tn, sid).set(getMetric(spout['acked']))
     STORM_TOPOLOGY_SPOUTS_FAILED.labels(
-        tn, tid, sid).set(getMetric(spout['failed']))
+        tn, sid).set(getMetric(spout['failed']))
 
 
 def boltMetric(bolt, tn, tid):
     bid = bolt['boltId']
-    STORM_TOPOLOGY_BOLTS_CAPACITY.labels(tn, tid, bid).set(
+    STORM_TOPOLOGY_BOLTS_CAPACITY.labels(tn, bid).set(
         getMetric(bolt['processLatency']))
     STORM_TOPOLOGY_BOLTS_PROCESS_LATENCY.labels(
-        tn, tid, bid).set(getMetric(bolt['capacity']))
+        tn, bid).set(getMetric(bolt['capacity']))
     STORM_TOPOLOGY_BOLTS_EXECUTE_LATENCY.labels(
-        tn, tid, bid).set(getMetric(bolt['executeLatency']))
+        tn, bid).set(getMetric(bolt['executeLatency']))
     STORM_TOPOLOGY_BOLTS_EXECUTORS.labels(
-        tn, tid, bid).set(getMetric(bolt['executors']))
+        tn, bid).set(getMetric(bolt['executors']))
     STORM_TOPOLOGY_BOLTS_TASKS.labels(
-        tn, tid, bid).set(getMetric(bolt['tasks']))
+        tn, bid).set(getMetric(bolt['tasks']))
     STORM_TOPOLOGY_BOLTS_ACKED.labels(
-        tn, tid, bid).set(getMetric(bolt['acked']))
+        tn, bid).set(getMetric(bolt['acked']))
     STORM_TOPOLOGY_BOLTS_FAILED.labels(
-        tn, tid, bid).set(getMetric(bolt['failed']))
+        tn, bid).set(getMetric(bolt['failed']))
     STORM_TOPOLOGY_BOLTS_EMITTED.labels(
-        tn, tid, bid).set(getMetric(bolt['emitted']))
+        tn, bid).set(getMetric(bolt['emitted']))
 
 
 def topologyMetric(topology):
@@ -207,33 +207,33 @@ def topologyMetric(topology):
 def topologySummaryMetric(topology_summary, stormUiHost):
     tn = topology_summary['name']
     tid = topology_summary['id']
-    STORM_TOPOLOGY_STATUS.labels(tn, tid).info(
+    STORM_TOPOLOGY_STATUS.labels(tn).info(
         {'status': topology_summary['status']})
-    STORM_TOPOLOGY_UPTIME_SECONDS.labels(tn, tid).set(
+    STORM_TOPOLOGY_UPTIME_SECONDS.labels(tn).set(
         topology_summary['uptimeSeconds'])
-    STORM_TOPOLOGY_TASKS_TOTAL.labels(tn, tid).set(
+    STORM_TOPOLOGY_TASKS_TOTAL.labels(tn).set(
         topology_summary['tasksTotal'])
-    STORM_TOPOLOGY_WORKERS_TOTAL.labels(tn, tid).set(
+    STORM_TOPOLOGY_WORKERS_TOTAL.labels(tn).set(
         topology_summary['workersTotal'])
-    STORM_TOPOLOGY_EXECUTORS_TOTAL.labels(tn, tid).set(
+    STORM_TOPOLOGY_EXECUTORS_TOTAL.labels(tn).set(
         topology_summary['executorsTotal'])
-    STORM_TOPOLOGY_REPLICATION_COUNT.labels(tn, tid).set(
+    STORM_TOPOLOGY_REPLICATION_COUNT.labels(tn).set(
         topology_summary['replicationCount'])
     STORM_TOPOLOGY_REQUESTED_MEM_ON_HEAP.labels(
-        tn, tid).set(topology_summary['requestedMemOnHeap'])
+        tn).set(topology_summary['requestedMemOnHeap'])
     STORM_TOPOLOGY_REQUESTED_MEM_OFF_HEAP.labels(
-        tn, tid).set(topology_summary['requestedMemOffHeap'])
+        tn).set(topology_summary['requestedMemOffHeap'])
     STORM_TOPOLOGY_REQUESTED_TOTAL_MEM.labels(
-        tn, tid).set(topology_summary['requestedTotalMem'])
-    STORM_TOPOLOGY_REQUESTED_CPU.labels(tn, tid).set(
+        tn).set(topology_summary['requestedTotalMem'])
+    STORM_TOPOLOGY_REQUESTED_CPU.labels(tn).set(
         topology_summary['requestedCpu'])
     STORM_TOPOLOGY_ASSIGNED_MEM_ON_HEAP.labels(
-        tn, tid).set(topology_summary['assignedMemOnHeap'])
+        tn).set(topology_summary['assignedMemOnHeap'])
     STORM_TOPOLOGY_ASSIGNED_MEM_OFF_HEAP.labels(
-        tn, tid).set(topology_summary['assignedMemOffHeap'])
+        tn).set(topology_summary['assignedMemOffHeap'])
     STORM_TOPOLOGY_ASSIGNED_TOTAL_MEM.labels(
-        tn, tid).set(topology_summary['assignedTotalMem'])
-    STORM_TOPOLOGY_ASSIGNED_CPU.labels(tn, tid).set(
+        tn).set(topology_summary['assignedTotalMem'])
+    STORM_TOPOLOGY_ASSIGNED_CPU.labels(tn).set(
         topology_summary['assignedCpu'])
 
     try:

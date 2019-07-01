@@ -349,4 +349,6 @@ while True:
             else:
                 print("Retry times: %d" % i)
                 i += 1
+        except Exception as e:
+            print(e)
     time.sleep(refreshRate)
